@@ -43,7 +43,7 @@ video {
     background-size: 5px 5px;
 }
 
-/* Minimalist white bar */
+/* White bar (loading starts black) */
 #whiteBar {
     position: absolute;
     top: 50%;
@@ -52,11 +52,10 @@ video {
     height: 4vw;
     max-height: 20px;
     min-height: 8px;
-    background-color: white;
+    background-color: black;
     transform: translateY(-50%);
     z-index: 5;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: background-color 1.5s ease, opacity 0.3s ease;
     touch-action: manipulation;
 }
 
@@ -84,7 +83,7 @@ video {
     background: rgba(255,255,255,1);
 }
 
-/* Aesthetic info overlay */
+/* Minimal info overlay */
 #infoOverlay {
     position: absolute;
     bottom: 60px;
@@ -94,7 +93,7 @@ video {
     background: rgba(0,0,0,0.7);
     color: white;
     font-size: 12px;
-    border-radius: 999px; /* pill shape */
+    border-radius: 999px;
     z-index: 10;
     display: flex;
     align-items: center;
@@ -107,8 +106,6 @@ video {
     font-weight: 500;
     letter-spacing: 0.5px;
 }
-
-/* Show overlay */
 #infoOverlay.show {
     opacity: 1;
 }
@@ -117,7 +114,7 @@ video {
 <body>
 
 <div class="video-container">
-    <video id="videoPlayer" loop playsinline>
+    <video id="videoPlayer" loop playsinline preload="auto">
         <source src="marcsbeachbar.mp4" type="video/mp4">
     </video>
 </div>
@@ -126,7 +123,6 @@ video {
 
 <div id="whiteBar"></div>
 
-<!-- Info button and overlay -->
 <div id="infoBtn">i</div>
 <div id="infoOverlay">SPACEBAR / TAP</div>
 
@@ -138,9 +134,19 @@ const infoOverlay = document.getElementById('infoOverlay');
 
 let isPlaying = false;
 let hideTimeout;
+let ready = false; // prevent interaction during loading
 
-// Show the white bar
+// Animate bar from black to white on page load
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        whiteBar.style.backgroundColor = 'white';
+        ready = true; // allow interactions after bar turned white
+    }, 100); // slight delay to ensure transition
+});
+
+// Show white bar temporarily
 function showBar() {
+    if (!ready) return;
     whiteBar.style.opacity = 1;
     clearTimeout(hideTimeout);
     if (isPlaying) {
@@ -150,12 +156,14 @@ function showBar() {
     }
 }
 
-// Toggle play/pause
+// Toggle video play/pause
 function toggleVideo() {
-    if (!isPlaying) {
+    if (!ready) return; // prevent interaction during loading
+    if(!isPlaying) {
         video.muted = false;
         video.play();
         isPlaying = true;
+        whiteBar.style.opacity = 0;
     } else {
         video.pause();
         isPlaying = false;
@@ -167,7 +175,6 @@ function toggleVideo() {
 ['click','touchstart'].forEach(evt => {
     document.addEventListener(evt, toggleVideo, {passive: true});
 });
-
 ['mousemove','keydown','touchstart','click'].forEach(evt => {
     document.addEventListener(evt, showBar, {passive: true});
 });
@@ -181,8 +188,8 @@ document.addEventListener('keydown', e => {
 });
 
 // Info button toggle
-infoBtn.addEventListener('click', (e) => {
-    e.stopPropagation(); // prevent triggering video toggle
+infoBtn.addEventListener('click', e => {
+    e.stopPropagation();
     infoOverlay.classList.toggle('show');
 });
 </script>
