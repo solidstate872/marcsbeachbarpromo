@@ -43,7 +43,6 @@ video {
     background-size: 5px 5px;
 }
 
-/* White bar (loading starts black) */
 #whiteBar {
     position: absolute;
     top: 50%;
@@ -56,10 +55,8 @@ video {
     transform: translateY(-50%);
     z-index: 5;
     transition: background-color 1.5s ease, opacity 0.3s ease;
-    touch-action: manipulation;
 }
 
-/* Info button */
 #infoBtn {
     position: absolute;
     bottom: 20px;
@@ -83,7 +80,6 @@ video {
     background: rgba(255,255,255,1);
 }
 
-/* Minimal info overlay */
 #infoOverlay {
     position: absolute;
     bottom: 60px;
@@ -120,9 +116,7 @@ video {
 </div>
 
 <div class="grid-overlay"></div>
-
 <div id="whiteBar"></div>
-
 <div id="infoBtn">i</div>
 <div id="infoOverlay">SPACEBAR / TAP</div>
 
@@ -134,14 +128,13 @@ const infoOverlay = document.getElementById('infoOverlay');
 
 let isPlaying = false;
 let hideTimeout;
-let ready = false; // prevent interaction during loading
-let lastToggleTime = 0; // prevent double toggles
+let ready = false;
 
 // Animate bar from black to white on page load
 window.addEventListener('load', () => {
     setTimeout(() => {
         whiteBar.style.backgroundColor = 'white';
-        ready = true; // allow interactions after bar turned white
+        ready = true;
     }, 100);
 });
 
@@ -157,13 +150,9 @@ function showBar() {
     }
 }
 
-// Toggle video play/pause with 200ms guard
+// Toggle video play/pause
 function toggleVideo() {
     if (!ready) return;
-    const now = Date.now();
-    if(now - lastToggleTime < 200) return; // prevent rapid double toggles
-    lastToggleTime = now;
-
     if(!isPlaying) {
         video.muted = false;
         video.play();
@@ -176,10 +165,6 @@ function toggleVideo() {
     showBar();
 }
 
-// Interaction listeners
-document.addEventListener('click', toggleVideo);
-document.addEventListener('touchend', toggleVideo, {passive: true});
-
 // Desktop spacebar toggle
 document.addEventListener('keydown', e => {
     if(e.code === 'Space') {
@@ -188,16 +173,32 @@ document.addEventListener('keydown', e => {
     }
 });
 
-// Show bar on any interaction
+// Desktop click and mobile touchend for main toggle
+document.addEventListener('click', e => {
+    if (!e.target.closest('#infoBtn')) {
+        toggleVideo();
+    }
+});
+document.addEventListener('touchend', e => {
+    if (!e.target.closest('#infoBtn')) {
+        toggleVideo();
+    }
+}, {passive:true});
+
+// Show bar on any interaction (mouse move, key, touch)
 ['mousemove','keydown','touchstart','click'].forEach(evt => {
-    document.addEventListener(evt, showBar, {passive: true});
+    document.addEventListener(evt, showBar, {passive:true});
 });
 
 // Info button toggle
 infoBtn.addEventListener('click', e => {
-    e.stopPropagation(); // prevent triggering video toggle
+    e.stopPropagation();
     infoOverlay.classList.toggle('show');
 });
+infoBtn.addEventListener('touchend', e => {
+    e.stopPropagation();
+    infoOverlay.classList.toggle('show');
+}, {passive:true});
 </script>
 
 </body>
