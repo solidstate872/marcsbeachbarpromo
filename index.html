@@ -135,13 +135,14 @@ const infoOverlay = document.getElementById('infoOverlay');
 let isPlaying = false;
 let hideTimeout;
 let ready = false; // prevent interaction during loading
+let lastToggleTime = 0; // prevent double toggles
 
 // Animate bar from black to white on page load
 window.addEventListener('load', () => {
     setTimeout(() => {
         whiteBar.style.backgroundColor = 'white';
         ready = true; // allow interactions after bar turned white
-    }, 100); // slight delay to ensure transition
+    }, 100);
 });
 
 // Show white bar temporarily
@@ -156,9 +157,13 @@ function showBar() {
     }
 }
 
-// Toggle video play/pause
+// Toggle video play/pause with 200ms guard
 function toggleVideo() {
-    if (!ready) return; // prevent interaction during loading
+    if (!ready) return;
+    const now = Date.now();
+    if(now - lastToggleTime < 200) return; // prevent rapid double toggles
+    lastToggleTime = now;
+
     if(!isPlaying) {
         video.muted = false;
         video.play();
@@ -172,12 +177,8 @@ function toggleVideo() {
 }
 
 // Interaction listeners
-['click','touchstart'].forEach(evt => {
-    document.addEventListener(evt, toggleVideo, {passive: true});
-});
-['mousemove','keydown','touchstart','click'].forEach(evt => {
-    document.addEventListener(evt, showBar, {passive: true});
-});
+document.addEventListener('click', toggleVideo);
+document.addEventListener('touchend', toggleVideo, {passive: true});
 
 // Desktop spacebar toggle
 document.addEventListener('keydown', e => {
@@ -187,9 +188,14 @@ document.addEventListener('keydown', e => {
     }
 });
 
+// Show bar on any interaction
+['mousemove','keydown','touchstart','click'].forEach(evt => {
+    document.addEventListener(evt, showBar, {passive: true});
+});
+
 // Info button toggle
 infoBtn.addEventListener('click', e => {
-    e.stopPropagation();
+    e.stopPropagation(); // prevent triggering video toggle
     infoOverlay.classList.toggle('show');
 });
 </script>
