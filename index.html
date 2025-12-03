@@ -129,6 +129,7 @@ const infoOverlay = document.getElementById('infoOverlay');
 let isPlaying = false;
 let hideTimeout;
 let ready = false;
+let tapLocked = false; // Prevent double tap toggles
 
 // Animate bar from black to white on page load
 window.addEventListener('load', () => {
@@ -152,7 +153,10 @@ function showBar() {
 
 // Toggle video play/pause
 function toggleVideo() {
-    if (!ready) return;
+    if (!ready || tapLocked) return;
+    tapLocked = true;
+    setTimeout(() => tapLocked = false, 250); // prevent rapid double taps
+
     if(!isPlaying) {
         video.muted = false;
         video.play();
@@ -173,32 +177,32 @@ document.addEventListener('keydown', e => {
     }
 });
 
-// Desktop click and mobile touchend for main toggle
-document.addEventListener('click', e => {
-    if (!e.target.closest('#infoBtn')) {
-        toggleVideo();
-    }
-});
+// Mobile touchend only for main toggle
 document.addEventListener('touchend', e => {
     if (!e.target.closest('#infoBtn')) {
         toggleVideo();
     }
 }, {passive:true});
 
-// Show bar on any interaction (mouse move, key, touch)
+// Desktop click only for main toggle
+document.addEventListener('click', e => {
+    if (!e.target.closest('#infoBtn')) {
+        toggleVideo();
+    }
+});
+
+// Show bar on any interaction
 ['mousemove','keydown','touchstart','click'].forEach(evt => {
     document.addEventListener(evt, showBar, {passive:true});
 });
 
-// Info button toggle
-infoBtn.addEventListener('click', e => {
-    e.stopPropagation();
-    infoOverlay.classList.toggle('show');
+// Info button toggle (does NOT trigger video)
+['click','touchend'].forEach(evt => {
+    infoBtn.addEventListener(evt, e => {
+        e.stopPropagation();
+        infoOverlay.classList.toggle('show');
+    }, {passive:true});
 });
-infoBtn.addEventListener('touchend', e => {
-    e.stopPropagation();
-    infoOverlay.classList.toggle('show');
-}, {passive:true});
 </script>
 
 </body>
