@@ -9,7 +9,7 @@ html, body {
     margin: 0;
     width: 100%;
     height: 100%;
-    background: #000000;
+    background: #000;
     overflow: hidden;
     font-family: 'Segoe UI', sans-serif;
     color: white;
@@ -20,22 +20,23 @@ html, body {
     text-align: center;
 }
 
-/* Landing page text */
+/* Landing page text - scaled and never overlaps bar */
 .welcome {
-    font-size: clamp(1rem, 5vh, 2.5rem);
-    margin-bottom: 20px;
+    font-size: clamp(1rem, 4vh, 2rem); /* dynamic scaling, slightly smaller */
+    margin-bottom: 10vh; /* space above the bar */
     max-height: 40%;
     z-index: 3;
+    line-height: 1.2;
 }
 
 .welcome sup {
-    font-size: 0.6em; /* smaller TM */
+    font-size: 0.6em;
     vertical-align: super;
 }
 
 .note {
-    font-size: clamp(0.8rem, 2.5vh, 1.2rem);
-    margin-top: 20px;
+    font-size: clamp(0.8rem, 2.5vh, 1.1rem);
+    margin-top: 2vh;
     color: #cccccc;
     z-index: 3;
 }
@@ -54,7 +55,6 @@ html, body {
     transition: background-color 0.3s ease;
 }
 
-/* Invert colors on hover */
 .invert-background {
     background-color: white;
     color: black;
@@ -63,63 +63,45 @@ html, body {
     background-color: black;
 }
 
-/* QR placeholder for landing page */
-#qrTip {
+/* Unified QR styling */
+.qr-box {
     position: absolute;
     bottom: 20px;
     right: 20px;
-    width: 50px;
-    height: 50px;
-    background-color: #ffffff11;
-    border: 2px solid rgba(255,255,255,0.6);
+    width: 100px;
+    height: 100px;
+    background-color: #ffffff; /* contrast for scanning */
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
-    z-index: 3;
+    border: 2px solid rgba(0,0,0,0.2);
     border-radius: 8px;
     box-shadow: 0 2px 12px rgba(0,0,0,0.5);
+    z-index: 3;
+    cursor: pointer;
+}
+.qr-box canvas {
+    width: 92px !important;
+    height: 92px !important;
 }
 
-/* Play symbol inside QR tip */
-#qrTip::before {
-    content: '';
-    display: block;
-    width: 0;
-    height: 0;
-    border-left: 12px solid white;
-    border-top: 8px solid transparent;
-    border-bottom: 8px solid transparent;
-}
-
-/* Container for fullscreen elements */
 #videoContainer {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     display: none;
 }
-
-/* Video full screen */
 #videoPlayer {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     object-fit: cover;
     z-index: 1;
 }
-
-/* Grid overlay for video */
 .grid-overlay {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     pointer-events: none;
     background-image:
         linear-gradient(to right, rgba(0,0,0,0.3) 1px, transparent 1px),
@@ -128,23 +110,7 @@ html, body {
     z-index: 2;
 }
 
-/* QR code button for video */
-#qrBtn {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    width: 50px;
-    height: 50px;
-    cursor: pointer;
-    background-image: url('https://api.qrserver.com/v1/create-qr-code/?size=100x100&data=https://marcsbeachbar.net');
-    background-size: cover;
-    border-radius: 0;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    z-index: 3;
-}
-
-/* Info button */
-#infoBtn {
+#fullscreenBtn {
     position: absolute;
     top: 20px;
     right: 20px;
@@ -152,30 +118,25 @@ html, body {
     height: 40px;
     background-color: rgba(255,255,255,0.2);
     border: 2px solid white;
-    border-radius: 50%;
-    color: white;
-    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    z-index: 4;
     display: flex;
     justify-content: center;
     align-items: center;
-    cursor: pointer;
-    z-index: 5;
-    transition: opacity 0.5s ease, transform 0.2s ease;
-    opacity: 1; /* visible by default */
+    font-size: 20px;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s ease, opacity 0.5s ease;
 }
-
-#infoBtn:hover {
+#fullscreenBtn:hover {
     background-color: rgba(255,255,255,0.4);
-    transform: scale(1.1);
 }
 
-/* Info overlay */
 #infoOverlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background-color: rgba(0,0,0,0.85);
     color: white;
     display: none;
@@ -186,12 +147,10 @@ html, body {
     z-index: 10;
     flex-direction: column;
 }
-
 #infoOverlay p {
     margin: 5px 0;
     font-size: 1.2rem;
 }
-
 #infoOverlay .closeBtn {
     margin-top: 20px;
     padding: 8px 16px;
@@ -202,22 +161,31 @@ html, body {
     cursor: pointer;
     font-weight: bold;
 }
+
+/* Build tag */
+#buildTag {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    font-size: 0.6rem;
+    color: rgba(255,255,255,0.35);
+    z-index: 20;
+    pointer-events: none;
+    user-select: none;
+    font-weight: 300;
+}
 </style>
 </head>
 <body>
 
-<!-- Welcome text with smaller TM -->
+<div id="buildTag">build 0.1.g</div>
+
 <div class="welcome">Welcome to the <span style="white-space: nowrap;">Videopage<sup>TM</sup></span> of Marc's Beach Bar</div>
 <div class="bar" id="startBar"></div>
 <div class="note">Start the experience.</div>
 
-<!-- Landing QR -->
-<div id="qrTip"></div>
+<div id="qrTip" class="qr-box"></div>
 
-<!-- Single Info button -->
-<div id="infoBtn">i</div>
-
-<!-- Info overlay -->
 <div id="infoOverlay">
     <p>Videopage™ is designed by Kobus Liebenberg</p>
     <p>Cell: +27 66 121 8440</p>
@@ -225,32 +193,52 @@ html, body {
     <button class="closeBtn">Close</button>
 </div>
 
-<!-- Video + overlay container -->
 <div id="videoContainer">
     <video id="videoPlayer" loop playsinline preload="auto">
         <source src="marcsbeachbar.mp4" type="video/mp4">
     </video>
     <div class="grid-overlay" id="grid"></div>
-    <div id="qrBtn"></div>
+    <div id="qrBtn" class="qr-box"></div>
+    <div id="fullscreenBtn">⛶</div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
+const url = "https://solidstate872.github.io/marcsbeachbarpromo/";
+
+// Landing QR
+new QRCode(document.getElementById("qrTip"), {
+    text: url,
+    width: 85,
+    height: 85,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+});
+
+// Video QR
+new QRCode(document.getElementById("qrBtn"), {
+    text: url,
+    width: 85,
+    height: 85,
+    colorDark: "#000000",
+    colorLight: "#ffffff",
+    correctLevel: QRCode.CorrectLevel.H
+});
+
 const startBar = document.getElementById('startBar');
 const qrTip = document.getElementById('qrTip');
 const videoContainer = document.getElementById('videoContainer');
 const video = document.getElementById('videoPlayer');
 const grid = document.getElementById('grid');
 const qrBtn = document.getElementById('qrBtn');
-const infoBtn = document.getElementById('infoBtn');
+const fullscreenBtn = document.getElementById('fullscreenBtn');
 const infoOverlay = document.getElementById('infoOverlay');
 const closeBtn = document.querySelector('.closeBtn');
-let infoTimeout;
 
-// Hover effect
 startBar.addEventListener('mouseover', () => document.body.classList.add('invert-background'));
 startBar.addEventListener('mouseout', () => document.body.classList.remove('invert-background'));
 
-// Start video
 function startVideoExperience() {
     videoContainer.style.display = 'block';
     video.play().catch(err => console.log("Autoplay blocked:", err));
@@ -259,34 +247,39 @@ function startVideoExperience() {
     document.querySelector('.welcome').style.display = 'none';
     document.querySelector('.note').style.display = 'none';
     qrTip.style.display = 'none';
+}
 
-    // Fade out info button
-    infoBtn.style.opacity = '0';
+startBar.addEventListener('click', startVideoExperience);
+qrTip.addEventListener('click', startVideoExperience);
 
-    // Request fullscreen
-    const requestFullScreen =
+qrBtn.addEventListener('click', () => infoOverlay.style.display = 'flex');
+
+videoContainer.addEventListener('click', e => {
+    if (e.target !== qrBtn && e.target !== fullscreenBtn) {
+        video.paused ? video.play() : video.pause();
+    }
+});
+
+fullscreenBtn.addEventListener('click', () => {
+    const req =
         videoContainer.requestFullscreen ||
         videoContainer.webkitRequestFullscreen ||
         videoContainer.msRequestFullscreen ||
         videoContainer.mozRequestFullScreen;
+    if (req) req.call(videoContainer);
+});
 
-    if (requestFullScreen) requestFullScreen.call(videoContainer).catch(err => console.log("Fullscreen prevented:", err));
+document.addEventListener('fullscreenchange', toggleUI);
+document.addEventListener('webkitfullscreenchange', toggleUI);
+document.addEventListener('mozfullscreenchange', toggleUI);
+document.addEventListener('MSFullscreenChange', toggleUI);
+
+function toggleUI() {
+    const f = document.fullscreenElement || document.webkitFullscreenElement;
+    qrBtn.style.opacity = f ? "0" : "1";
+    fullscreenBtn.style.opacity = f ? "0" : "1";
 }
 
-// Start video on click
-startBar.addEventListener('click', startVideoExperience);
-qrTip.addEventListener('click', startVideoExperience);
-
-// Toggle play/pause via QR button
-qrBtn.addEventListener('click', () => video.paused ? video.play() : video.pause());
-
-// Tap container to play/pause
-videoContainer.addEventListener('click', e => { if (e.target !== qrBtn && e.target !== infoBtn) video.paused ? video.play() : video.pause(); });
-
-// Show info overlay
-infoBtn.addEventListener('click', () => infoOverlay.style.display = 'flex');
-
-// Close overlay and reset landing page
 closeBtn.addEventListener('click', () => {
     infoOverlay.style.display = 'none';
     video.pause();
@@ -296,41 +289,17 @@ closeBtn.addEventListener('click', () => {
     document.querySelector('.welcome').style.display = 'block';
     document.querySelector('.note').style.display = 'block';
     qrTip.style.display = 'flex';
-    infoBtn.style.opacity = '1';
+    qrBtn.style.opacity = '1';
+    fullscreenBtn.style.opacity = '1';
 });
 
-// Click outside overlay to close
 infoOverlay.addEventListener('click', e => { if (e.target === infoOverlay) closeBtn.click(); });
 
-// Secret keybind Ctrl + G to toggle grid
 document.addEventListener('keydown', e => {
     if (e.ctrlKey && e.key.toLowerCase() === 'g') {
-        grid.style.display = (grid.style.display === 'none' || grid.style.display === '') ? 'block' : 'none';
+        grid.style.display = grid.style.display === 'none' ? 'block' : 'none';
     }
-});
-
-// Handle info button visibility
-function updateInfoButton() {
-    if (video.paused) {
-        infoBtn.style.opacity = '1';
-        clearTimeout(infoTimeout);
-        infoTimeout = setTimeout(() => {
-            if (!video.paused) infoBtn.style.opacity = '0';
-        }, 3000);
-    } else {
-        infoBtn.style.opacity = '0';
-    }
-}
-
-// Listen for pause/play events
-video.addEventListener('pause', updateInfoButton);
-video.addEventListener('play', updateInfoButton);
-
-// Handle fullscreen changes (ESC exit)
-['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange', 'MSFullscreenChange'].forEach(eventType => {
-    document.addEventListener(eventType, updateInfoButton);
 });
 </script>
-
 </body>
 </html>
