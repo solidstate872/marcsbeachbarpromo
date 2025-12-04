@@ -22,8 +22,8 @@ html, body {
 
 /* Landing page text - scaled and never overlaps bar */
 .welcome {
-    font-size: clamp(1rem, 4vh, 2rem); /* dynamic scaling, slightly smaller */
-    margin-bottom: 10vh; /* space above the bar */
+    font-size: clamp(1rem, 4vh, 2rem);
+    margin-bottom: 10vh;
     max-height: 40%;
     z-index: 3;
     line-height: 1.2;
@@ -70,7 +70,7 @@ html, body {
     right: 20px;
     width: 100px;
     height: 100px;
-    background-color: #ffffff; /* contrast for scanning */
+    background-color: #ffffff;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -178,16 +178,18 @@ html, body {
 </head>
 <body>
 
-<div id="buildTag">build 0.1.g</div>
+<div id="buildTag">build 0.2.a</div>
 
-<div class="welcome">Welcome to the <span style="white-space: nowrap;">Videopage<sup>TM</sup></span> of Marc's Beach Bar</div>
+<div class="welcome">
+    Welcome to <span style="color:#26A69A; white-space: nowrap;">theVideopage<sup>TM</sup></span> of Marc's Beach Bar
+</div>
 <div class="bar" id="startBar"></div>
 <div class="note">Start the experience.</div>
 
 <div id="qrTip" class="qr-box"></div>
 
 <div id="infoOverlay">
-    <p>Videopage™ is designed by Kobus Liebenberg</p>
+    <p>theVideopage™ is designed by Kobus Liebenberg</p>
     <p>Cell: +27 66 121 8440</p>
     <p>Email: kobus.email@gmail.com</p>
     <button class="closeBtn">Close</button>
